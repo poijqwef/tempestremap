@@ -1,21 +1,25 @@
 ##############################################################################
 # Compiler and flags
-CC= g++
-CCOMP= gcc
-CFLAGS= -O3
-#CFLAGS= -g
+CC=${CPP_COMPILER}
+CCOMP=${C_COMPILER}
+CFLAGS+=-O3
 
 # NETCDF library directories
-NETCDF_INCLUDEDIR=/opt/local/include
-NETCDF_LIBDIR=/opt/local/lib
+NETCDF_INCLUDEDIR=${NETCDF_INC}
+NETCDF_LIBDIR=${NETCDF_LIB}
 
 # Library files to include
 UNAME=$(shell uname)
 ifeq ($(UNAME), Linux)
-	LDFILES= -lnetcdf_c++ -lnetcdf -llapack -lblas -Wl,-rpath=${NETCDF_LIBDIR}
+	LDFILES+= -lnetcdf_c++ -lnetcdf -Wl,-rpath=${NETCDF_LIBDIR}
+	#LDFILES= -lnetcdf_c++ -lnetcdf -llapack -lblas -Wl,-rpath=${NETCDF_LIBDIR}
 else
-	LDFILES= -lnetcdf -lnetcdf_c++ -framework accelerate
+	LDFILES+= -lnetcdf -lnetcdf_c++ -framework accelerate
 endif
+
+$(info $$NETCDF_INCLUDEDIR is [${NETCDF_INCLUDEDIR}])
+$(info $$NETCDF_LIBDIR is [${NETCDF_LIBDIR}])
+$(info $$LDFILES is [${LDFILES}])
 
 ##############################################################################
 # DO NOT MODIFY BELOW THIS LINE
@@ -135,3 +139,6 @@ include $(FILES:%.cpp=$(DEPDIR)/%.d)
 
 # DO NOT DELETE
 
+GridElements.o: Defines.h GridElements.h Exception.h DataVector.h
+GridElements.o: DataMatrix.h Announce.h FiniteElementTools.h DataMatrix3D.h
+GridElements.o: GaussQuadrature.h
