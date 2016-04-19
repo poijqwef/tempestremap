@@ -1,5 +1,11 @@
 ##############################################################################
 # Compiler and flags
+
+INSTALL_DIR=${BIN_DIR}
+ifeq ($(INSTALL_DIR),)
+	INSTALL_DIR=../bin
+endif
+
 CC=${CPP_COMPILER}
 CCOMP=${C_COMPILER}
 CFLAGS+=-O3
@@ -12,7 +18,6 @@ NETCDF_LIBDIR=${NETCDF_LIB}
 UNAME=$(shell uname)
 ifeq ($(UNAME), Linux)
 	LDFILES+= -lnetcdf_c++ -lnetcdf -Wl,-rpath=${NETCDF_LIBDIR}
-	#LDFILES= -lnetcdf_c++ -lnetcdf -llapack -lblas -Wl,-rpath=${NETCDF_LIBDIR}
 else
 	LDFILES+= -lnetcdf -lnetcdf_c++ -framework accelerate
 endif
@@ -20,6 +25,7 @@ endif
 $(info $$NETCDF_INCLUDEDIR is [${NETCDF_INCLUDEDIR}])
 $(info $$NETCDF_LIBDIR is [${NETCDF_LIBDIR}])
 $(info $$LDFILES is [${LDFILES}])
+$(info $$INSTALL_DIR is [${INSTALL_DIR}])
 
 ##############################################################################
 # DO NOT MODIFY BELOW THIS LINE
@@ -123,7 +129,6 @@ ApplyOfflineMap: $(APPLYOFFLINEMAP_FILES:%.cpp=$(BUILDDIR)/%.o)
 GenerateOfflineMap: $(GENERATEOFFLINEMAP_FILES:%.cpp=$(BUILDDIR)/%.o) $(GENERATEOFFLINEMAP_CFILES:%.c=$(BUILDDIR)/%.o)
 	$(CC) $(LDFLAGS) -o $@ $(GENERATEOFFLINEMAP_FILES:%.cpp=$(BUILDDIR)/%.o) $(GENERATEOFFLINEMAP_CFILES:%.c=$(BUILDDIR)/%.o) $(LDFILES)
 
-
 ##
 ## Clean
 ##
@@ -131,6 +136,7 @@ clean:
 	rm -f GenerateRLLMesh GenerateCSMesh GenerateICOMesh GenerateLambertConfConicMesh GenerateOverlapMesh GenerateGLLMetaData MeshToTxt GenerateTestData CalculateDiffNorms ApplyOfflineMap GenerateOfflineMap *.o
 	rm -rf $(DEPDIR)
 	rm -rf $(BUILDDIR)
+	rm -rf $(INSTALL_DIR)/GenerateRLLMesh $(INSTALL_DIR)/GenerateCSMesh $(INSTALL_DIR)/GenerateICOMesh $(INSTALL_DIR)/GenerateLambertConfConicMesh $(INSTALL_DIR)/GenerateOverlapMesh $(INSTALL_DIR)/GenerateGLLMetaData $(INSTALL_DIR)/MeshToTxt $(INSTALL_DIR)/GenerateTestData $(INSTALL_DIR)/CalculateDiffNorms $(INSTALL_DIR)/ApplyOfflineMap $(INSTALL_DIR)/GenerateOfflineMap
 
 ##
 ## Include dependencies
@@ -139,6 +145,4 @@ include $(FILES:%.cpp=$(DEPDIR)/%.d)
 
 # DO NOT DELETE
 
-GridElements.o: Defines.h GridElements.h Exception.h DataVector.h
-GridElements.o: DataMatrix.h Announce.h FiniteElementTools.h DataMatrix3D.h
-GridElements.o: GaussQuadrature.h
+Announce.o: Announce.h
