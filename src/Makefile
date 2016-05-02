@@ -87,8 +87,8 @@ include Make.defs
 ## Build instructions
 ##
 all: GenerateRLLMesh GenerateCSMesh GenerateICOMesh GenerateVolumetricMesh GenerateLambertConfConicMesh GenerateOverlapMesh GenerateOverlapMesh_v1 GenerateGLLMetaData MeshToTxt GenerateTestData CalculateDiffNorms ApplyOfflineMap GenerateOfflineMap
-	mkdir -p ../bin
-	mv $^ ../bin
+	mkdir -p $(INSTALL_DIR)
+	mv $^ $(INSTALL_DIR)/
 
 GenerateRLLMesh: $(GENERATERLLMESH_FILES:%.cpp=$(BUILDDIR)/%.o)
 	$(CC) $(LDFLAGS) -o $@ $(GENERATERLLMESH_FILES:%.cpp=$(BUILDDIR)/%.o) $(LDFILES)
@@ -145,4 +145,6 @@ include $(FILES:%.cpp=$(DEPDIR)/%.d)
 
 # DO NOT DELETE
 
-Announce.o: Announce.h
+OfflineMap.o: OfflineMap.h SparseMatrix.h Defines.h DataVector.h Exception.h
+OfflineMap.o: DataMatrix.h DataMatrix3D.h NetCDFUtilities.h GridElements.h
+OfflineMap.o: FiniteElementTools.h Announce.h
